@@ -16,4 +16,3 @@ manifest/output/
 temp/
 temp.yaml
 bin
-**/config/config.yaml
