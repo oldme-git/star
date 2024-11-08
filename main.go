@@ -1,11 +1,14 @@
 package main
 
 import (
+	_ "star/internal/logic"
+
 	"errors"
+
+	_ "star/internal/packed"
 
 	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"
 	"github.com/gogf/gf/v2/frame/g"
-	_ "star/internal/packed"
 
 	"github.com/gogf/gf/v2/os/gctx"
 
