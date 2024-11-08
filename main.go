@@ -1,22 +1,22 @@
 package main
 
 import (
-	_ "star/internal/logic"
-
 	"errors"
 
+	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"
+	_ "star/internal/logic"
 	_ "star/internal/packed"
 
-	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"
 	"github.com/gogf/gf/v2/frame/g"
-
 	"github.com/gogf/gf/v2/os/gctx"
-
 	"star/internal/cmd"
 )
 
 func main() {
 	var err error
+
+	// 全局设置i18n
+	g.I18n().SetLanguage("zh-CN")
 
 	// 检查数据库是否能连接
 	err = connData()
