@@ -10,7 +10,7 @@ import (
 )
 
 func Create(ctx context.Context, in *model.WordInput) error {
-	if err := checkWord(ctx, in.Word); err != nil {
+	if err := checkWord(ctx, 0, in); err != nil {
 		return err
 	}
 
@@ -29,8 +29,31 @@ func Create(ctx context.Context, in *model.WordInput) error {
 	return nil
 }
 
-func checkWord(ctx context.Context, word string) error {
-	count, err := dao.Words.Ctx(ctx).Where("word", word).Count()
+func Update(ctx context.Context, id uint, in *model.WordInput) error {
+	if err := checkWord(ctx, id, in); err != nil {
+		return err
+	}
+	_, err := dao.Words.Ctx(ctx).Data(do.Words{
+		Word:               in.Word,
+		Definition:         in.Definition,
+		ExampleSentence:    in.ExampleSentence,
+		ChineseTranslation: in.ChineseTranslation,
+		Pronunciation:      in.Pronunciation,
+		ProficiencyLevel:   in.ProficiencyLevel,
+	}).Where("id", id).Update()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// checkWord 在更新时不检查自身
+func checkWord(ctx context.Context, id uint, in *model.WordInput) error {
+	db := dao.Words.Ctx(ctx).Where("word", in.Word)
+	if id > 0 {
+		db = db.WhereNot("id", id)
+	}
+	count, err := db.Count()
 	if err != nil {
 		return err
 	}
