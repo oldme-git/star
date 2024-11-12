@@ -5,5 +5,7 @@
 package logic
 
 import (
+	_ "star/internal/logic/middleware"
 	_ "star/internal/logic/users"
+	_ "star/internal/logic/words"
 )

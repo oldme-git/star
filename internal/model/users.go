@@ -1,6 +1,6 @@
 package model
 
-type UsersInput struct {
+type UserInput struct {
 	Username string
 	Password string
 	Email    string

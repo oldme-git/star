@@ -9,8 +9,8 @@ import (
 	"star/internal/model/do"
 )
 
-func Register(ctx context.Context, in *model.UsersInput) error {
-	if err := CheckUser(ctx, in.Username); err != nil {
+func Register(ctx context.Context, in *model.UserInput) error {
+	if err := checkUser(ctx, in.Username); err != nil {
 		return err
 	}
 
@@ -25,7 +25,7 @@ func Register(ctx context.Context, in *model.UsersInput) error {
 	return nil
 }
 
-func CheckUser(ctx context.Context, username string) error {
+func checkUser(ctx context.Context, username string) error {
 	count, err := dao.Users.Ctx(ctx).Where("username", username).Count()
 	if err != nil {
 		return err
