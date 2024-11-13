@@ -19,3 +19,9 @@ type WordInput struct {
 	Pronunciation      string
 	ProficiencyLevel   ProficiencyLevel
 }
+
+type WordQuery struct {
+	Word string
+	Page int `json:"page"`
+	Size int
+}

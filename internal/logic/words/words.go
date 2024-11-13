@@ -7,6 +7,7 @@ import (
 	"star/internal/dao"
 	"star/internal/model"
 	"star/internal/model/do"
+	"star/internal/model/entity"
 )
 
 func Create(ctx context.Context, in *model.WordInput) error {
@@ -45,6 +46,49 @@ func Update(ctx context.Context, id uint, in *model.WordInput) error {
 		return err
 	}
 	return nil
+}
+
+func List(ctx context.Context, query *model.WordQuery) (list []entity.Words, total uint, err error) {
+	if query == nil {
+		query = &model.WordQuery{}
+	}
+	// 对于查询初始值的处理
+	if query.Page == 0 {
+		query.Page = 1
+	}
+	if query.Size == 0 {
+		query.Size = 15
+	}
+
+	// 组成查询链
+	db := dao.Words.Ctx(ctx)
+	// 模糊查询
+	if len(query.Word) != 0 {
+		db = db.Where("word like ?", "%"+query.Word+"%")
+	}
+	db = db.Order("created_at desc, id desc").Page(query.Page, query.Size)
+
+	data, totalInt, err := db.AllAndCount(true)
+	if err != nil {
+		return
+	}
+
+	list = []entity.Words{}
+	_ = data.Structs(&list)
+	total = uint(totalInt)
+
+	return
+}
+
+func Detail(ctx context.Context, id uint) (word *entity.Words, err error) {
+	word = &entity.Words{}
+	err = dao.Words.Ctx(ctx).Where("id", id).Scan(&word)
+	return
+}
+
+func Delete(ctx context.Context, id uint) (err error) {
+	_, err = dao.Words.Ctx(ctx).Where("id", id).Delete()
+	return
 }
 
 // checkWord 在更新时不检查自身
