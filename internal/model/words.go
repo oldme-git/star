@@ -3,11 +3,11 @@ package model
 type ProficiencyLevel uint
 
 const (
-	ProficiencyLevel1 ProficiencyLevel = 1
-	ProficiencyLevel2 ProficiencyLevel = 2
-	ProficiencyLevel3 ProficiencyLevel = 3
-	ProficiencyLevel4 ProficiencyLevel = 4
-	ProficiencyLevel5 ProficiencyLevel = 5
+	ProficiencyLevel1 ProficiencyLevel = iota + 1
+	ProficiencyLevel2
+	ProficiencyLevel3
+	ProficiencyLevel4
+	ProficiencyLevel5
 )
 
 type WordInput struct {
