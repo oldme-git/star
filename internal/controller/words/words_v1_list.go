@@ -4,12 +4,19 @@ import (
 	"context"
 
 	"star/api/words/v1"
+	"star/internal/logic/users"
 	"star/internal/logic/words"
 	"star/internal/model"
 )
 
 func (c *ControllerV1) List(ctx context.Context, req *v1.ListReq) (res *v1.ListRes, err error) {
+	uid, err := users.GetUid(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	query := &model.WordQuery{
+		Uid:  uid,
 		Word: req.Word,
 		Page: req.Page,
 		Size: req.Size,

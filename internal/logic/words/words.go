@@ -2,6 +2,7 @@ package words
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"star/internal/dao"
@@ -61,10 +62,10 @@ func List(ctx context.Context, query *model.WordQuery) (list []entity.Words, tot
 	}
 
 	// 组成查询链
-	db := dao.Words.Ctx(ctx)
+	db := dao.Words.Ctx(ctx).Where("uid", query.Uid)
 	// 模糊查询
 	if len(query.Word) != 0 {
-		db = db.Where("word like ?", "%"+query.Word+"%")
+		db = db.WhereLike("word", fmt.Sprintf("%%%s%%", query.Word))
 	}
 	db = db.Order("created_at desc, id desc").Page(query.Page, query.Size)
 

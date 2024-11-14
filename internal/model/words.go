@@ -21,7 +21,8 @@ type WordInput struct {
 }
 
 type WordQuery struct {
+	Uid  uint
 	Word string
-	Page int `json:"page"`
+	Page int
 	Size int
 }
