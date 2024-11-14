@@ -62,7 +62,11 @@ func List(ctx context.Context, query *model.WordQuery) (list []entity.Words, tot
 	}
 
 	// 组成查询链
-	db := dao.Words.Ctx(ctx).Where("uid", query.Uid)
+	db := dao.Words.Ctx(ctx)
+	if query.Uid > 0 {
+		db = db.Where("uid", query.Uid)
+	}
+
 	// 模糊查询
 	if len(query.Word) != 0 {
 		db = db.WhereLike("word", fmt.Sprintf("%%%s%%", query.Word))
@@ -81,14 +85,22 @@ func List(ctx context.Context, query *model.WordQuery) (list []entity.Words, tot
 	return
 }
 
-func Detail(ctx context.Context, id uint) (word *entity.Words, err error) {
+func Detail(ctx context.Context, uid, id uint) (word *entity.Words, err error) {
 	word = &entity.Words{}
-	err = dao.Words.Ctx(ctx).Where("id", id).Scan(&word)
+	db := dao.Words.Ctx(ctx).Where("id", id)
+	if uid > 0 {
+		db = db.Where("uid", uid)
+	}
+	err = db.Scan(&word)
 	return
 }
 
-func Delete(ctx context.Context, id uint) (err error) {
-	_, err = dao.Words.Ctx(ctx).Where("id", id).Delete()
+func Delete(ctx context.Context, uid, id uint) (err error) {
+	db := dao.Words.Ctx(ctx).Where("id", id)
+	if uid > 0 {
+		db = db.Where("uid", uid)
+	}
+	_, err = db.Delete()
 	return
 }
 

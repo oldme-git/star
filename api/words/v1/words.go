@@ -2,7 +2,7 @@ package v1
 
 import (
 	"github.com/gogf/gf/v2/frame/g"
-	"star/internal/model/entity"
+	"github.com/gogf/gf/v2/os/gtime"
 )
 
 type CreateReq struct {
@@ -50,7 +50,15 @@ type DetailReq struct {
 }
 
 type DetailRes struct {
-	*entity.Words
+	Id                 uint        `json:"id"`
+	Word               string      `json:"word"`
+	Definition         string      `json:"definition"`
+	ExampleSentence    string      `json:"exampleSentence"`
+	ChineseTranslation string      `json:"chineseTranslation"`
+	Pronunciation      string      `json:"pronunciation"`
+	ProficiencyLevel   uint        `json:"proficiencyLevel"`
+	CreatedAt          *gtime.Time `json:"createdAt"`
+	UpdatedAt          *gtime.Time `json:"updatedAt"`
 }
 
 type DeleteReq struct {
