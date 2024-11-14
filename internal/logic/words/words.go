@@ -93,7 +93,7 @@ func Delete(ctx context.Context, id uint) (err error) {
 
 // checkWord 在更新时不检查自身
 func checkWord(ctx context.Context, id uint, in *model.WordInput) error {
-	db := dao.Words.Ctx(ctx).Where("word", in.Word)
+	db := dao.Words.Ctx(ctx).Where("uid", in.Uid).Where("word", in.Word)
 	if id > 0 {
 		db = db.WhereNot("id", id)
 	}
