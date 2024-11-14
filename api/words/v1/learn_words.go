@@ -3,7 +3,6 @@ package v1
 import (
 	"github.com/gogf/gf/v2/frame/g"
 	"star/internal/model"
-	"star/internal/model/entity"
 )
 
 type RandListReq struct {
@@ -12,7 +11,7 @@ type RandListReq struct {
 }
 
 type RandListRes struct {
-	List []entity.Words `json:"list"`
+	List []List `json:"list"`
 }
 
 type SetLevelReq struct {

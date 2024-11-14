@@ -40,8 +40,8 @@ type ListReq struct {
 }
 
 type ListRes struct {
-	List  []entity.Words `json:"list"`
-	Total uint           `json:"total"`
+	List  []List `json:"list"`
+	Total uint   `json:"total"`
 }
 
 type DetailReq struct {
