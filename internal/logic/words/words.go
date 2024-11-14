@@ -35,14 +35,20 @@ func Update(ctx context.Context, id uint, in *model.WordInput) error {
 	if err := checkWord(ctx, id, in); err != nil {
 		return err
 	}
-	_, err := dao.Words.Ctx(ctx).Data(do.Words{
+
+	db := dao.Words.Ctx(ctx).Where("uid", in.Uid).Data(do.Words{
 		Word:               in.Word,
 		Definition:         in.Definition,
 		ExampleSentence:    in.ExampleSentence,
 		ChineseTranslation: in.ChineseTranslation,
 		Pronunciation:      in.Pronunciation,
 		ProficiencyLevel:   in.ProficiencyLevel,
-	}).Where("id", id).Update()
+	}).Where("id", id)
+	if in.Uid > 0 {
+		db = db.Where("uid", in.Uid)
+	}
+
+	_, err := db.Update()
 	if err != nil {
 		return err
 	}
