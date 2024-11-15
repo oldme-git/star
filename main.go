@@ -19,7 +19,7 @@ func main() {
 	g.I18n().SetLanguage("zh-CN")
 
 	// 检查数据库是否能连接
-	err = connData()
+	err = connDb()
 	if err != nil {
 		panic(err)
 	}
@@ -27,8 +27,8 @@ func main() {
 	cmd.Main.Run(gctx.GetInitCtx())
 }
 
-// connData 检查数据库连接是否正常
-func connData() error {
+// connDb 检查数据库连接是否正常
+func connDb() error {
 	err := g.DB().PingMaster()
 	if err != nil {
 		return errors.New("连接到数据库失败")
