@@ -97,7 +97,7 @@ func Detail(ctx context.Context, uid, id uint) (word *entity.Words, err error) {
 	if uid > 0 {
 		db = db.Where("uid", uid)
 	}
-	err = db.Scan(&word)
+	err = db.Scan(word)
 	return
 }
 
