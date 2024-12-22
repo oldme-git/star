@@ -11,8 +11,11 @@ import (
 	"star/internal/model/entity"
 )
 
-func Create(ctx context.Context, in *model.WordInput) error {
-	if err := checkWord(ctx, 0, in); err != nil {
+type Words struct {
+}
+
+func (w *Words) Create(ctx context.Context, in *model.WordInput) error {
+	if err := w.checkWord(ctx, 0, in); err != nil {
 		return err
 	}
 
@@ -31,8 +34,8 @@ func Create(ctx context.Context, in *model.WordInput) error {
 	return nil
 }
 
-func Update(ctx context.Context, id uint, in *model.WordInput) error {
-	if err := checkWord(ctx, id, in); err != nil {
+func (w *Words) Update(ctx context.Context, id uint, in *model.WordInput) error {
+	if err := w.checkWord(ctx, id, in); err != nil {
 		return err
 	}
 
@@ -55,7 +58,7 @@ func Update(ctx context.Context, id uint, in *model.WordInput) error {
 	return nil
 }
 
-func List(ctx context.Context, query *model.WordQuery) (list []entity.Words, total uint, err error) {
+func (w *Words) List(ctx context.Context, query *model.WordQuery) (list []entity.Words, total uint, err error) {
 	if query == nil {
 		query = &model.WordQuery{}
 	}
@@ -91,7 +94,7 @@ func List(ctx context.Context, query *model.WordQuery) (list []entity.Words, tot
 	return
 }
 
-func Detail(ctx context.Context, uid, id uint) (word *entity.Words, err error) {
+func (w *Words) Detail(ctx context.Context, uid, id uint) (word *entity.Words, err error) {
 	word = &entity.Words{}
 	db := dao.Words.Ctx(ctx).Where("id", id)
 	if uid > 0 {
@@ -101,7 +104,7 @@ func Detail(ctx context.Context, uid, id uint) (word *entity.Words, err error) {
 	return
 }
 
-func Delete(ctx context.Context, uid, id uint) (err error) {
+func (w *Words) Delete(ctx context.Context, uid, id uint) (err error) {
 	db := dao.Words.Ctx(ctx).Where("id", id)
 	if uid > 0 {
 		db = db.Where("uid", uid)
@@ -111,7 +114,7 @@ func Delete(ctx context.Context, uid, id uint) (err error) {
 }
 
 // checkWord 在更新时不检查自身
-func checkWord(ctx context.Context, id uint, in *model.WordInput) error {
+func (w *Words) checkWord(ctx context.Context, id uint, in *model.WordInput) error {
 	db := dao.Words.Ctx(ctx).Where("uid", in.Uid).Where("word", in.Word)
 	if id > 0 {
 		db = db.WhereNot("id", id)

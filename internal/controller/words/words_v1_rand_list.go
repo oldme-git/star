@@ -4,18 +4,16 @@ import (
 	"context"
 
 	"star/api/words/v1"
-	"star/internal/logic/users"
-	"star/internal/logic/words"
 	"star/internal/model"
 )
 
 func (c *ControllerV1) RandList(ctx context.Context, req *v1.RandListReq) (res *v1.RandListRes, err error) {
-	uid, err := users.GetUid(ctx)
+	uid, err := c.users.GetUid(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	wordList, err := words.Rand(ctx, uid, req.Limit)
+	wordList, err := c.words.Rand(ctx, uid, req.Limit)
 	if err != nil {
 		return nil, err
 	}

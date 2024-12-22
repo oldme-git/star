@@ -6,10 +6,18 @@ package words
 
 import (
 	"star/api/words"
+	usersL "star/internal/logic/users"
+	wordsL "star/internal/logic/words"
 )
 
-type ControllerV1 struct{}
+type ControllerV1 struct {
+	users *usersL.Users
+	words *wordsL.Words
+}
 
 func NewV1() words.IWordsV1 {
-	return &ControllerV1{}
+	return &ControllerV1{
+		users: &usersL.Users{},
+		words: &wordsL.Words{},
+	}
 }

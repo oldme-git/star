@@ -12,13 +12,13 @@ import (
 	"star/utility"
 )
 
-type UserClaims struct {
+type userClaims struct {
 	Id       uint
 	Username string
 	jwt.RegisteredClaims
 }
 
-func Login(ctx context.Context, username, password string) (tokenString string, err error) {
+func (u *Users) Login(ctx context.Context, username, password string) (tokenString string, err error) {
 	var user entity.Users
 	err = dao.Users.Ctx(ctx).Where("username", username).Scan(&user)
 	if err != nil {
@@ -35,33 +35,33 @@ func Login(ctx context.Context, username, password string) (tokenString string, 
 	}
 
 	// 生成token
-	userClaims := &UserClaims{
+	uc := &userClaims{
 		Id:       user.Id,
 		Username: user.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(6 * time.Hour)),
 		},
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, userClaims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, uc)
 	return token.SignedString(utility.JwtKey)
 }
 
-func Info(ctx context.Context) (user *entity.Users, err error) {
+func (u *Users) Info(ctx context.Context) (user *entity.Users, err error) {
 	user = new(entity.Users)
 	tokenString := g.RequestFromCtx(ctx).Request.Header.Get("Authorization")
 
-	tokenClaims, _ := jwt.ParseWithClaims(tokenString, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
+	tokenClaims, _ := jwt.ParseWithClaims(tokenString, &userClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return utility.JwtKey, nil
 	})
 
-	if claims, ok := tokenClaims.Claims.(*UserClaims); ok && tokenClaims.Valid {
+	if claims, ok := tokenClaims.Claims.(*userClaims); ok && tokenClaims.Valid {
 		err = dao.Users.Ctx(ctx).Where("id", claims.Id).Scan(&user)
 	}
 	return
 }
 
-func GetUid(ctx context.Context) (uint, error) {
-	user, err := Info(ctx)
+func (u *Users) GetUid(ctx context.Context) (uint, error) {
+	user, err := u.Info(ctx)
 	if err != nil {
 		return 0, err
 	}

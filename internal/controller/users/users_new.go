@@ -6,10 +6,15 @@ package users
 
 import (
 	"star/api/users"
+	usersL "star/internal/logic/users"
 )
 
-type ControllerV1 struct{}
+type ControllerV1 struct {
+	users *usersL.Users
+}
 
 func NewV1() users.IUsersV1 {
-	return &ControllerV1{}
+	return &ControllerV1{
+		users: &usersL.Users{},
+	}
 }

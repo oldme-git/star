@@ -4,13 +4,11 @@ import (
 	"context"
 
 	"star/api/words/v1"
-	"star/internal/logic/users"
-	"star/internal/logic/words"
 	"star/internal/model"
 )
 
 func (c *ControllerV1) List(ctx context.Context, req *v1.ListReq) (res *v1.ListRes, err error) {
-	uid, err := users.GetUid(ctx)
+	uid, err := c.users.GetUid(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -21,7 +19,7 @@ func (c *ControllerV1) List(ctx context.Context, req *v1.ListReq) (res *v1.ListR
 		Page: req.Page,
 		Size: req.Size,
 	}
-	wordList, total, err := words.List(ctx, query)
+	wordList, total, err := c.words.List(ctx, query)
 	if err != nil {
 		return nil, err
 	}

@@ -4,11 +4,10 @@ import (
 	"context"
 
 	"star/api/account/v1"
-	"star/internal/logic/users"
 )
 
 func (c *ControllerV1) Info(ctx context.Context, req *v1.InfoReq) (res *v1.InfoRes, err error) {
-	user, err := users.Info(ctx)
+	user, err := c.users.Info(ctx)
 	if err != nil {
 		return nil, err
 	}
