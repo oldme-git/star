@@ -1,130 +1,134 @@
 package words
 
 import (
-	"context"
-	"fmt"
+    "context"
 
-	"github.com/gogf/gf/v2/errors/gerror"
-	"star/internal/dao"
-	"star/internal/model"
-	"star/internal/model/do"
-	"star/internal/model/entity"
+    v1 "star/api/words/v1"
+    "star/internal/dao"
+    "star/internal/model/do"
+    "star/internal/model/entity"
 )
 
 type Words struct {
 }
 
-func (w *Words) Create(ctx context.Context, in *model.WordInput) error {
-	if err := w.checkWord(ctx, 0, in); err != nil {
-		return err
-	}
-
-	_, err := dao.Words.Ctx(ctx).Data(do.Words{
-		Uid:                in.Uid,
-		Word:               in.Word,
-		Definition:         in.Definition,
-		ExampleSentence:    in.ExampleSentence,
-		ChineseTranslation: in.ChineseTranslation,
-		Pronunciation:      in.Pronunciation,
-		ProficiencyLevel:   in.ProficiencyLevel,
-	}).Insert()
-	if err != nil {
-		return err
-	}
-	return nil
+type CreateInput struct {
+    Uid                uint
+    Word               string
+    Definition         string
+    ExampleSentence    string
+    ChineseTranslation string
+    Pronunciation      string
+    ProficiencyLevel   v1.ProficiencyLevel
 }
 
-func (w *Words) Update(ctx context.Context, id uint, in *model.WordInput) error {
-	if err := w.checkWord(ctx, id, in); err != nil {
-		return err
-	}
-
-	db := dao.Words.Ctx(ctx).Where("uid", in.Uid).Data(do.Words{
-		Word:               in.Word,
-		Definition:         in.Definition,
-		ExampleSentence:    in.ExampleSentence,
-		ChineseTranslation: in.ChineseTranslation,
-		Pronunciation:      in.Pronunciation,
-		ProficiencyLevel:   in.ProficiencyLevel,
-	}).Where("id", id)
-	if in.Uid > 0 {
-		db = db.Where("uid", in.Uid)
-	}
-
-	_, err := db.Update()
-	if err != nil {
-		return err
-	}
-	return nil
+func New() *Words {
+    return &Words{}
 }
 
-func (w *Words) List(ctx context.Context, query *model.WordQuery) (list []entity.Words, total uint, err error) {
-	if query == nil {
-		query = &model.WordQuery{}
-	}
-	// 对于查询初始值的处理
-	if query.Page == 0 {
-		query.Page = 1
-	}
-	if query.Size == 0 {
-		query.Size = 15
-	}
+func (w *Words) Create(ctx context.Context, in CreateInput) error {
+    _, err := dao.Words.Ctx(ctx).Data(do.Words{
+        Uid:                in.Uid,
+        Word:               in.Word,
+        Definition:         in.Definition,
+        ExampleSentence:    in.ExampleSentence,
+        ChineseTranslation: in.ChineseTranslation,
+        Pronunciation:      in.Pronunciation,
+        ProficiencyLevel:   in.ProficiencyLevel,
+    }).Insert()
+    if err != nil {
+        return err
+    }
+    return nil
+}
 
-	// 组成查询链
-	db := dao.Words.Ctx(ctx)
-	if query.Uid > 0 {
-		db = db.Where("uid", query.Uid)
-	}
+type UpdateInput struct {
+    Word               string
+    Definition         string
+    ExampleSentence    string
+    ChineseTranslation string
+    Pronunciation      string
+    ProficiencyLevel   v1.ProficiencyLevel
+}
 
-	// 模糊查询
-	if len(query.Word) != 0 {
-		db = db.WhereLike("word", fmt.Sprintf("%%%s%%", query.Word))
-	}
-	db = db.Order("created_at desc, id desc").Page(query.Page, query.Size)
+func (w *Words) Update(ctx context.Context, id uint, in UpdateInput) error {
+    var (
+        cls = dao.Words.Columns()
+        orm = dao.Words.Ctx(ctx)
+    )
+    orm = orm.Data(do.Words{
+        Word:               in.Word,
+        Definition:         in.Definition,
+        ExampleSentence:    in.ExampleSentence,
+        ChineseTranslation: in.ChineseTranslation,
+        Pronunciation:      in.Pronunciation,
+        ProficiencyLevel:   in.ProficiencyLevel,
+    }).Where(cls.Id, id)
+    _, err := orm.Update()
+    if err != nil {
+        return err
+    }
+    return nil
+}
 
-	data, totalInt, err := db.AllAndCount(true)
-	if err != nil {
-		return
-	}
+type ListInput struct {
+    Uid  uint
+    Word string
+    Page int
+    Size int
+}
 
-	list = []entity.Words{}
-	_ = data.Structs(&list)
-	total = uint(totalInt)
+func (w *Words) List(ctx context.Context, in ListInput) (list []entity.Words, total int, err error) {
+    // 对于查询初始值的处理
+    if in.Page == 0 {
+        in.Page = 1
+    }
+    if in.Size == 0 {
+        in.Size = 15
+    }
 
-	return
+    var (
+        cls = dao.Words.Columns()
+        orm = dao.Words.Ctx(ctx)
+    )
+    // 组成查询链
+    if in.Uid > 0 {
+        orm = orm.Where(cls.Uid, in.Uid)
+    }
+
+    // 模糊查询
+    if len(in.Word) != 0 {
+        orm = orm.WhereLike(cls.Word, "%"+in.Word+"%")
+    }
+    orm = orm.OrderDesc(cls.CreatedAt).OrderDesc(cls.Id).Page(in.Page, in.Size)
+    if err = orm.ScanAndCount(&list, &total, true); err != nil {
+        return
+    }
+    return
 }
 
 func (w *Words) Detail(ctx context.Context, uid, id uint) (word *entity.Words, err error) {
-	word = &entity.Words{}
-	db := dao.Words.Ctx(ctx).Where("id", id)
-	if uid > 0 {
-		db = db.Where("uid", uid)
-	}
-	err = db.Scan(word)
-	return
+    var (
+        cls = dao.Words.Columns()
+        orm = dao.Words.Ctx(ctx)
+    )
+    orm = orm.Where(cls.Id, id)
+    if uid > 0 {
+        orm = orm.Where(cls.Uid, uid)
+    }
+    err = orm.Scan(&word)
+    return
 }
 
 func (w *Words) Delete(ctx context.Context, uid, id uint) (err error) {
-	db := dao.Words.Ctx(ctx).Where("id", id)
-	if uid > 0 {
-		db = db.Where("uid", uid)
-	}
-	_, err = db.Delete()
-	return
-}
-
-// checkWord 在更新时不检查自身
-func (w *Words) checkWord(ctx context.Context, id uint, in *model.WordInput) error {
-	db := dao.Words.Ctx(ctx).Where("uid", in.Uid).Where("word", in.Word)
-	if id > 0 {
-		db = db.WhereNot("id", id)
-	}
-	count, err := db.Count()
-	if err != nil {
-		return err
-	}
-	if count > 0 {
-		return gerror.New("单词已存在")
-	}
-	return nil
+    var (
+        cls = dao.Words.Columns()
+        orm = dao.Words.Ctx(ctx)
+    )
+    orm = orm.Where(cls.Id, id)
+    if uid > 0 {
+        orm = orm.Where(cls.Uid, uid)
+    }
+    _, err = orm.Delete()
+    return
 }

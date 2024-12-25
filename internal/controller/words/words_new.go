@@ -5,19 +5,19 @@
 package words
 
 import (
-	"star/api/words"
-	usersL "star/internal/logic/users"
-	wordsL "star/internal/logic/words"
+    "star/api/words"
+    usersLogic "star/internal/logic/users"
+    wordsLogic "star/internal/logic/words"
 )
 
 type ControllerV1 struct {
-	users *usersL.Users
-	words *wordsL.Words
+    users *usersLogic.Users
+    words *wordsLogic.Words
 }
 
 func NewV1() words.IWordsV1 {
-	return &ControllerV1{
-		users: &usersL.Users{},
-		words: &wordsL.Words{},
-	}
+    return &ControllerV1{
+        users: usersLogic.New(),
+        words: wordsLogic.New(),
+    }
 }
