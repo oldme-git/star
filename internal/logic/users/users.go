@@ -6,8 +6,9 @@ type Users struct {
 }
 
 func New() *Users {
-    return &Users{}
+	return &Users{}
 }
-func encryptPassword(password string) string {
-    return gmd5.MustEncryptString(password)
+
+func (u *Users) encryptPassword(password string) string {
+	return gmd5.MustEncryptString(password)
 }
