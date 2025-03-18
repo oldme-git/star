@@ -44,7 +44,7 @@ func (u *Users) Login(ctx context.Context, username, password string) (tokenStri
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, uc)
-	return token.SignedString(consts.JwtKey)
+	return token.SignedString([]byte(consts.JwtKey))
 }
 
 func (u *Users) Info(ctx context.Context) (user *entity.Users, err error) {
