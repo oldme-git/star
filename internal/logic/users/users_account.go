@@ -50,7 +50,7 @@ func (u *Users) Login(ctx context.Context, username, password string) (tokenStri
 func (u *Users) Info(ctx context.Context) (user *entity.Users, err error) {
 	tokenString := g.RequestFromCtx(ctx).Request.Header.Get("Authorization")
 	tokenClaims, _ := jwt.ParseWithClaims(tokenString, &jwtClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return consts.JwtKey, nil
+		return []byte(consts.JwtKey), nil
 	})
 
 	if claims, ok := tokenClaims.Claims.(*jwtClaims); ok && tokenClaims.Valid {
